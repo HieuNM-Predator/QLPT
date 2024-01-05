@@ -154,7 +154,32 @@ namespace QLPT_API.Services.Service
 
         public ResponseObject<BinhLuanBaiVietDTO> XoaBinhLuan(int binhLuanId)
         {
-            throw new NotImplementedException();
+            BinhLuanBaiViet bl = _context.BinhLuanBaiViet.FirstOrDefault(x => x.Id == binhLuanId && x.DaXoa == false);
+            if(bl == null)
+            {
+                responseObject.Data = null;
+                responseObject.Message = "Bình luận không tồn tại";
+                responseObject.Status = StatusCodes.Status404NotFound;
+                return responseObject;
+            }
+
+            bl.DaXoa = true;
+            bl.ThoiGianXoa = DateTime.Now;
+            _context.BinhLuanBaiViet.Update(bl);
+            _context.SaveChanges();
+
+            var thichBinhLuanBaiViets = _context.NguoiDungThichBinhLuanBaiViet.Where(x => x.BinhLuanBaiVietId == binhLuanId && x.DaXoa == false);
+            if(thichBinhLuanBaiViets.Count() > 0)
+            {
+                thichBinhLuanBaiViets.ToList().ForEach(x => x.DaXoa = true);
+                _context.NguoiDungThichBinhLuanBaiViet.UpdateRange(thichBinhLuanBaiViets);
+                _context.SaveChanges();
+            }
+
+            responseObject.Data = null;
+            responseObject.Message = "Xóa bình luận thành công";
+            responseObject.Status = StatusCodes.Status200OK;
+            return responseObject;
         }
 
         public ResponseObject<BinhLuanBaiVietDTO> BoThich(int phatTuId, int baiVietId, int binhLuanId)

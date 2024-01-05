@@ -88,5 +88,22 @@ namespace QLPT_API.Controllers
             }
             return Ok(result);  
         }
+
+        [HttpDelete]
+        [Route("/api/BaiViet/XoaBaiViet")]
+        [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult XoaBaiViet(int baiVietId)
+        {
+            if (!int.TryParse(HttpContext.User.FindFirst("Id")?.Value, out int id))
+            {
+                return BadRequest("Người dùng không hợp lệ");
+            }
+            var result = _baiVietService.XoaBaiViet(baiVietId);
+            if (result == null)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }

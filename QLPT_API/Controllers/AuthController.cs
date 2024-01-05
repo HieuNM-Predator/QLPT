@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QLPT_API.Handles.DTOs;
@@ -47,6 +48,7 @@ namespace QLPT_API.Controllers
 
         [HttpPost]
         [Route("/api/auth/register")]
+        //[EnableCors("AllowOrigin")]
         public IActionResult Register([FromForm]Request_Register request) 
         {
 

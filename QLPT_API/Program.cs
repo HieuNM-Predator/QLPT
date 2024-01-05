@@ -16,6 +16,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var allowedOrigin = builder.Configuration.GetSection("AllowedOrigins").Value.ToString();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins(allowedOrigin);
+                      });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 
@@ -51,8 +63,6 @@ builder.Services.AddSingleton<ResponseObject<DonDangKyDTO>>();
 builder.Services.AddSingleton<ResponseObject<DaoTrangDTO>>();
 builder.Services.AddSingleton<ResponseObject<BaiVietDTO>>();
 builder.Services.AddSingleton<ResponseObject<BinhLuanBaiVietDTO>>();
-
-
 
 
 
@@ -94,6 +104,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
+app.UseCors(MyAllowSpecificOrigins);
+
 app.UseAuthorization();
 
 app.UseStaticFiles(new StaticFileOptions
@@ -102,6 +114,7 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/Images"
     // https://Localhost:1234/Images
 });
+
 
 app.MapControllers();
 

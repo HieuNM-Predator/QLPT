@@ -229,7 +229,32 @@ namespace QLPT_API.Services.Service
 
         public ResponseObject<BaiVietDTO> XoaBaiViet(int baiVietId)
         {
-            throw new NotImplementedException();
+            BaiViet bv = _context.BaiViet.FirstOrDefault(x => x.Id == baiVietId && x.DaXoa == false);   
+            if(bv == null)
+            {
+                responseObject.Data = null;
+                responseObject.Message = "Bài viết không tồn tại";
+                responseObject.Status = StatusCodes.Status404NotFound;
+                return responseObject;
+            }
+
+            bv.DaXoa = true;
+            bv.ThoiGianXoa = DateTime.Now;
+            _context.BaiViet.Update(bv);
+            _context.SaveChanges();
+
+            var nguoiDungThichBaiViet = _context.NguoiDungThichBaiViet.Where(x => x.BaiVietId == baiVietId && x.DaXoa == false);
+            if(nguoiDungThichBaiViet.Count() > 0) 
+            {
+                nguoiDungThichBaiViet.ToList().ForEach(x => x.DaXoa = true);
+                _context.NguoiDungThichBaiViet.UpdateRange(nguoiDungThichBaiViet);
+                _context.SaveChanges();
+            }
+
+            responseObject.Data = null;
+            responseObject.Message = "Xóa bài viết thành công";
+            responseObject.Status = StatusCodes.Status200OK;
+            return responseObject;
         }
 
         public IQueryable<BaiVietDTO> DanhSachBaiViet(int pageSize = 10, int pageNumber = 1)

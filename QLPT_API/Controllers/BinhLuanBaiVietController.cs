@@ -70,5 +70,39 @@ namespace QLPT_API.Controllers
             }
             return Ok(result);
         }
+
+        [HttpDelete]
+        [Route("api/BinhLuanBaiViet/boThichBinhLuan")]
+        [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult BoThichBinhLuan(int baiVietId, int binhLuanId)
+        {
+            if (!int.TryParse(HttpContext.User.FindFirst("Id")?.Value, out int id))
+            {
+                return BadRequest("Id người dùng không hợp lệ");
+            }
+            var result = binhLuanService.BoThich(id, baiVietId, binhLuanId);
+            if(result == null)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        [Route("api/BinhLuanBaiViet/xoaBinhLuan")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult XoaBinhLuan(int binhLuanId)
+        {
+            if (!int.TryParse(HttpContext.User.FindFirst("Id")?.Value, out int id))
+            {
+                return BadRequest("Id người dùng không hợp lệ");
+            }
+            var result = binhLuanService.XoaBinhLuan(binhLuanId);
+            if (result == null)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
     }
 }
